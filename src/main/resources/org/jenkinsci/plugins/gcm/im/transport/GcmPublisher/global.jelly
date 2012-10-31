@@ -1,0 +1,15 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:super="/hudson/plugins/im/IMPublisher">
+
+    <f:section title="GCM Job Notification">
+
+        <f:optionalBlock name="${descriptor.PARAM_ENABLED}" title="Enable GCM Notification" checked="${descriptor.enabled}">
+            <f:entry title="GCM private key block" help="TODO">
+                <f:textbox name="${descriptor.PARAM_PRIVATE_KEY}" value="${descriptor.privateKey}" />
+            </f:entry>
+        </f:optionalBlock>
+
+    </f:section>
+
+</j:jelly>
