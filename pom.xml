@@ -1,10 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Using local 1.21-SNAPSHOT with 1.466 parent -->
     <parent>
         <groupId>org.jvnet.hudson.plugins</groupId>
         <artifactId>instant-messaging-parent</artifactId>
-        <version>1.20</version>
+        <version>1.21-SNAPSHOT</version>
         <relativePath>../instant-messaging-parent-plugin/pom.xml</relativePath>
     </parent>
 
@@ -24,22 +25,11 @@
         </developer>
     </developers>
 
-    <licenses>
-        <license>
-            <name>MIT license</name>
-            <comments>All source code is under the MIT license.</comments>
-        </license>
-    </licenses>
-
-    <properties>
-        <version.instant-messaging.plugin>1.22</version.instant-messaging.plugin>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>instant-messaging</artifactId>
-            <version>${version.instant-messaging.plugin}</version>
+            <version>1.22</version>
             <scope>compile</scope>
         </dependency>
 
@@ -58,6 +48,17 @@
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>2.1</version>
         </dependency>
     </dependencies>
 

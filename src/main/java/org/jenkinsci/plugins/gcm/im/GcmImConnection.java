@@ -10,52 +10,52 @@ import java.util.logging.Logger;
 
 import org.jenkinsci.plugins.gcm.transport.GcmManager;
 
-public class GcmImConnection implements IMConnection {
+final class GcmImConnection implements IMConnection {
 
     private static final Logger LOGGER = Logger.getLogger(GcmImConnection.class.getName());
 
+    private static final GcmImConnection INSTANCE = new GcmImConnection();
+
+    static GcmImConnection getInstance() {
+        return INSTANCE;
+    }
+
     @Override
-    public void close() {
-        // Nothing
-        LOGGER.info("Connection close");
+    public void send(IMMessageTarget target, String text) throws IMException {
+        String gcmToken = ((GcmMessageTarget) target).getToken();
+        LOGGER.info(String.format("Send '%s' to user '%s' with token %s", text, target, gcmToken));
+        GcmManager.send(gcmToken, text);
     }
 
     @Override
     public boolean connect() {
-        LOGGER.info("Connection open, please");
+        // Do nothing!
         return true;
     }
 
     @Override
     public boolean isConnected() {
-        LOGGER.info("Connection is connected?");
         return true;
     }
 
     @Override
-    public void send(IMMessageTarget target, String text) throws IMException {
-        // TODO
-        String token = ((GcmMessageTarget) target).getToken();
-        LOGGER.info("Send message '" + text + "' to " + target + " (token: " + token + ")");
-        GcmManager.send(token, text);
-    }
-
-    @Override
     public void setPresence(IMPresence presence, String statusMessage) throws IMException {
-        // TODO
-        LOGGER.info("Set presence " + presence + ", with message " + statusMessage);
+        // Not required
     }
 
     @Override
     public void addConnectionListener(IMConnectionListener listener) {
-        // Nothing
-        LOGGER.info("Add connection listener: " + listener);
+        // Not required
     }
 
     @Override
     public void removeConnectionListener(IMConnectionListener listener) {
-        // Nothing
-        LOGGER.info("Remove connection listener: " + listener);
+        // Not required
+    }
+
+    @Override
+    public void close() {
+        // Not required
     }
 
 }

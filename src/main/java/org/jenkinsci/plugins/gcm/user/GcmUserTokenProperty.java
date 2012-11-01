@@ -4,8 +4,9 @@ import hudson.Extension;
 import hudson.Util;
 import hudson.model.UserProperty;
 import hudson.model.UserPropertyDescriptor;
+import jenkins.security.ApiTokenProperty;
 
-import org.kohsuke.stapler.export.Exported;
+import org.jenkinsci.plugins.gcm.im.GcmPublisher;
 
 public class GcmUserTokenProperty extends UserProperty {
 
@@ -27,9 +28,21 @@ public class GcmUserTokenProperty extends UserProperty {
         this.token = token;
     }
 
-    @Exported
-    public String getGcmToken() {
+    public String getToken() {
         return token;
+    }
+
+    public String getGcmProjectNumber() {
+        return GcmPublisher.DESCRIPTOR.getProjectNumber();
+    }
+
+    public String getUserApiToken() {
+        // TODO: Security check?
+        ApiTokenProperty tokenProperty = user.getProperty(ApiTokenProperty.class);
+        if (tokenProperty == null) {
+            return null;
+        }
+        return tokenProperty.getApiToken();
     }
 
     @Override

@@ -30,18 +30,21 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     private static final String PREFIX = "gcm.";
 
+    // Required by {@code GcmPublish/global.jelly}
     public static final String PARAM_PROJECT_NUMBER = PREFIX + "projectNumber";
-
     public static final String PARAM_API_KEY = PREFIX + "apiKey";
 
+    // Required by {@code GcmPublish/config.jelly}
     public static final String PARAM_TARGETS = PREFIX + "targets";
 
-    // TODO: Check whether these can be renamed
+    // Required to be named like this for {@code IMPublisher/notification-strategy.jelly}
     public static final String[] PARAMETERVALUE_STRATEGY_VALUES = NotificationStrategy.getDisplayNames();
     public static final String PARAMETERVALUE_STRATEGY_DEFAULT = NotificationStrategy.STATECHANGE_ONLY.getDisplayName();
 
+    // Project number from the Google API console
     private String projectNumber;
 
+    // Server API key from the Google API console
     private String apiKey;
 
     public GcmPublisherDescriptor() {
@@ -52,84 +55,39 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     @Override
     public String getDisplayName() {
-        return "Notify Android devices";
+        return "Notify Android devices"; // TODO localise
     }
 
     @Override
     public String getPluginDescription() {
-        return "GCM plugin TODO";
+        return "GCM plugin TODO"; // TODO where is this used?
     }
 
     @Override
     public boolean isEnabled() {
+        // This plugin doesn't require a persistent server connection,
+        // so it's safe to always report this IM plugin as enabled
         return true;
     }
 
+    /**
+     * Returns the globally-configured Google APIs project number.
+     * 
+     * @return Project number from the Google API console, or {@code null} if not set.
+     */
     public String getProjectNumber() {
         return projectNumber;
     }
 
+    /**
+     * Returns the globally-configured server API key for this project.
+     * 
+     * @return Server API key from the Google API console, or {@code null} if not set.
+     */
     public String getApiKey() {
         return apiKey;
     }
 
-    @Override
-    public String getHost() {
-        // Not required
-        return null;
-    }
-
-    @Override
-    public String getHostname() {
-        // Not required
-        return null;
-    }
-
-    @Override
-    public int getPort() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public String getHudsonUserName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getUserName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isExposePresence() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public String getCommandPrefix() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getDefaultIdSuffix() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    /**
-     * Creates a new instance of {@link GcmPublisher} from a submitted form.
-     */
     @Override
     public GcmPublisher newInstance(final StaplerRequest req, JSONObject formData)
             throws FormException {
@@ -142,14 +100,16 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
             givenTargets = t.split("\\s");
         }
 
+        // From the users listed, determine which ones are actual Jenkins users
         List<IMMessageTarget> targets = new ArrayList<IMMessageTarget>(givenTargets.length);
         for (String userId : givenTargets) {
-            User user = User.get(userId, false);
+            User user = User.get(userId.trim(), false);
             if (user != null) {
                 targets.add(new GcmMessageTarget(user.getId()));
             }
         }
 
+        // Boilerplate advanced configuration stuff
         String n = req.getParameter(getParamNames().getStrategy());
         if (n == null) {
             n = PARAMETERVALUE_STRATEGY_DEFAULT;
@@ -192,14 +152,11 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
         value = value.toLowerCase();
         for (User user : User.getAll()) {
             if (user == User.getUnknown()) {
-                LOGGER.info("autocomplete: ignoring unknown user");
                 continue;
             }
 
-            LOGGER.info("autocomplete: checking user: " + user.getId());
             if (user.getId().toLowerCase().startsWith(value)
                     || user.getFullName().toLowerCase().startsWith(value)) {
-                LOGGER.info("autocomplete: adding");
                 candidates.add(user.getId());
             }
         }
@@ -253,4 +210,52 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
         };
     }
 
+    // These methods are required to be overridden,
+    // but for this plugin we don't need any of them
+
+    @Override
+    public boolean isExposePresence() {
+        // Not appropriate for this plugin
+        return false;
+    }
+
+    @Override
+    public String getHost() {
+        return null;
+    }
+
+    @Override
+    public String getHostname() {
+        return null;
+    }
+
+    @Override
+    public int getPort() {
+        return 0;
+    }
+
+    @Override
+    public String getHudsonUserName() {
+        return null;
+    }
+
+    @Override
+    public String getUserName() {
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
+    }
+
+    @Override
+    public String getCommandPrefix() {
+        return null;
+    }
+
+    @Override
+    public String getDefaultIdSuffix() {
+        return null;
+    }
 }

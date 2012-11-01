@@ -1,14 +1,28 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
 
+    <script src="${rootURL}/plugin/gcm/js/livepipe.js"></script>
+    <script src="${rootURL}/plugin/gcm/js/effects.js"></script>
+    <script src="${rootURL}/plugin/gcm/js/window.js"></script>
     <script type="text/javascript">
-      function showQr() {
-        alert("Here we should should the auto-config QR code for user '${it.id}' (if appropriate)");
-      }
+      document.observe('dom:loaded',function(){
+        var modal = new Control.Modal($('modal'), {
+          overlayOpacity: 0.75,
+          className: 'modal',
+          fade: true
+        });
+      });
     </script>
 
+    <style type="text/css">
+      #control_overlay {
+        background-color:#000;
+      }
+    </style>
+
+    <!-- TODO: Nicer styling / hide token by default / more help text about how to use the QR -->
     <f:entry title="Google Cloud Messaging token" help="TODO-token">
         <f:textbox name="gcm.token" value="${instance.token}" />
-    <input type="button" class="yui-button" onClick="showQr()" value="Show QR code..." />
+        <a id="modal" href="${rootURL}/gcm/generateQrCode">Show QR code...</a>
     </f:entry>
 
 </j:jelly>

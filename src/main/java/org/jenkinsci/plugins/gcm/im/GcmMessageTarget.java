@@ -6,7 +6,7 @@ import hudson.plugins.im.IMMessageTarget;
 import org.jenkinsci.plugins.gcm.user.GcmUserTokenProperty;
 import org.kohsuke.stapler.export.Exported;
 
-class GcmMessageTarget implements IMMessageTarget {
+final class GcmMessageTarget implements IMMessageTarget {
 
     private static final long serialVersionUID = 1L;
 
@@ -17,7 +17,7 @@ class GcmMessageTarget implements IMMessageTarget {
      * 
      * @param userId Jenkins user ID.
      */
-    public GcmMessageTarget(String userId) {
+    GcmMessageTarget(String userId) {
         this.userId = userId;
     }
 
@@ -26,13 +26,13 @@ class GcmMessageTarget implements IMMessageTarget {
         return userId;
     }
 
-    /** @return Returns the GCM token for this target. */
+    /** @return Returns the configured GCM token for this target, or {@code null}. */
     String getToken() {
         GcmUserTokenProperty prop = User.get(userId, false).getProperty(GcmUserTokenProperty.class);
         if (prop == null) {
             return null;
         }
-        return prop.getGcmToken();
+        return prop.getToken();
     }
 
     @Override

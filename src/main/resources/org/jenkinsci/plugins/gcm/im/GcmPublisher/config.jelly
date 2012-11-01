@@ -6,7 +6,7 @@
         <f:textbox
           name="${descriptor.PARAM_TARGETS}"
           value="${instance.targets}"
-          autoCompleteDelimChar="," />
+          autoCompleteDelimChar=" " />
 
     </f:entry>
 

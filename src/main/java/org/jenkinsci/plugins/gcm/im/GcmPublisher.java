@@ -11,18 +11,15 @@ import hudson.plugins.im.IMPublisher;
 import hudson.plugins.im.build_notify.BuildToChatNotifier;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.jenkinsci.plugins.gcm.user.GcmUserTokenProperty;
 
-public class GcmPublisher extends IMPublisher {
-
-    private static final Logger LOGGER = Logger.getLogger(GcmPublisher.class.getName());
+public final class GcmPublisher extends IMPublisher {
 
     @Extension
     public static final GcmPublisherDescriptor DESCRIPTOR = new GcmPublisherDescriptor();
 
-    public GcmPublisher(List<IMMessageTarget> targets, String notificationStrategy,
+    GcmPublisher(List<IMMessageTarget> targets, String notificationStrategy,
             boolean notifyGroupChatsOnBuildStart, boolean notifySuspects, boolean notifyCulprits,
             boolean notifyFixers, boolean notifyUpstreamCommitters,
             BuildToChatNotifier buildToChatNotifier, MatrixJobMultiplier matrixJobMultiplier)
@@ -39,29 +36,20 @@ public class GcmPublisher extends IMPublisher {
 
     @Override
     protected IMConnection getIMConnection() throws IMException {
-        LOGGER.info("Publisher: get connection");
         return GcmImConnectionProvider.getInstance().currentConnection();
     }
 
     @Override
     protected String getPluginName() {
-        return "GCM Android notifier plugin"; // TODO localise
-    }
-
-    @Override
-    public List<IMMessageTarget> getNotificationTargets() {
-        LOGGER.info("Publisher: get notification targets");
-        return super.getNotificationTargets();
+        return "GCM Android notifier plugin"; // TODO where is this shown? localise
     }
 
     @Override
     protected String getConfiguredIMId(User user) {
-        LOGGER.info("Publisher: get IM info for user: " + user.toString());
-
         // Return the GCM token for the given Jenkins user
         GcmUserTokenProperty p = (GcmUserTokenProperty) user.getProperties().get(GcmUserTokenProperty.DESCRIPTOR);
         if (p != null) {
-            return p.getGcmToken();
+            return p.getToken();
         }
         return null;
     }

@@ -15,7 +15,7 @@ public class GcmManager {
     // TODO: This stuff should happen async, as "send" is blocking...
     public static void send(String userToken, String text) {
         // TODO: build message properly
-        Message message = new Message.Builder().addData("msg", text).delayWhileIdle(false).build();
+        Message message = new Message.Builder().addData("m", text).delayWhileIdle(false).build();
         LOGGER.info("Created GCM message: " + message);
 
         String serverApiKey = GcmPublisher.DESCRIPTOR.getApiKey();
