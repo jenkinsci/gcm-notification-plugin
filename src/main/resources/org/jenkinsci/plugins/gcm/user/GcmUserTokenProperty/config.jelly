@@ -22,7 +22,7 @@
     <!-- TODO: Nicer styling / hide token by default / more help text about how to use the QR -->
     <f:entry title="Google Cloud Messaging token" help="TODO-token">
         <f:textbox name="gcm.token" value="${instance.token}" />
-        <a id="modal" href="${rootURL}/gcm/generateQrCode">Show QR code...</a>
+        <a id="modal" href="${rootURL}/gcm/generateQrCode.png">Show QR code...</a>
     </f:entry>
 
 </j:jelly>

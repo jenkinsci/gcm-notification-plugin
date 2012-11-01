@@ -271,7 +271,7 @@ Control.Window = Class.create({
         if(this.href && !this.options.iframe && !this.remoteContentLoaded){
             //link to image
             this.remoteContentLoaded = true;
-            if(this.href.match(/generateQrCode$|\.(jpe?g|gif|png|tiff?)$/i)){
+            if(this.href.match(/\.(jpe?g|gif|png|tiff?)$/i)){
                 var img = new Element('img');
                 img.observe('load',function(img){
                     this.getRemoteContentInsertionTarget().insert(img);

@@ -19,6 +19,7 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.WebMethod;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -60,6 +61,7 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
     }
 
     // TODO: Proper response codes if invalid user
+    @WebMethod(name = "generateQrCode.png")
     public HttpResponse doGenerateQrCode() {
         User user = getCurrentUser();
         if (user == null) {
