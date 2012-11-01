@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.gcm.im.transport;
+package org.jenkinsci.plugins.gcm.im;
 
 import hudson.plugins.im.IMConnection;
 import hudson.plugins.im.IMConnectionListener;
@@ -8,13 +8,11 @@ import hudson.plugins.im.IMPresence;
 
 import java.util.logging.Logger;
 
+import org.jenkinsci.plugins.gcm.transport.GcmManager;
+
 public class GcmImConnection implements IMConnection {
 
     private static final Logger LOGGER = Logger.getLogger(GcmImConnection.class.getName());
-
-    public GcmImConnection() {
-        LOGGER.info("Creating GcmImConnection " + Integer.toHexString(hashCode()));
-    }
 
     @Override
     public void close() {
@@ -37,7 +35,9 @@ public class GcmImConnection implements IMConnection {
     @Override
     public void send(IMMessageTarget target, String text) throws IMException {
         // TODO
-        LOGGER.info("Send message '" + text + "' to " + target);
+        String token = ((GcmMessageTarget) target).getToken();
+        LOGGER.info("Send message '" + text + "' to " + target + " (token: " + token + ")");
+        GcmManager.send(token, text);
     }
 
     @Override

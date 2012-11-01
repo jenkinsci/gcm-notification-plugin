@@ -1,0 +1,14 @@
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+
+    <script type="text/javascript">
+      function showQr() {
+        alert("Here we should should the auto-config QR code for user '${it.id}' (if appropriate)");
+      }
+    </script>
+
+    <f:entry title="Google Cloud Messaging token" help="TODO-token">
+        <f:textbox name="gcm.token" value="${instance.token}" />
+    <input type="button" class="yui-button" onClick="showQr()" value="Show QR code..." />
+    </f:entry>
+
+</j:jelly>

@@ -1,0 +1,17 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+  xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+  xmlns:super="/hudson/plugins/im/IMPublisher">
+
+    <f:section title="Google Cloud Messaging Notifications">
+
+        <f:entry title="Project number" description="That weird number in the API console" help="TODO">
+            <f:textbox name="${descriptor.PARAM_GOOGLE_ACCOUNT}" value="${descriptor.googleAccount}" />
+        </f:entry>
+
+        <f:entry title="Simple API access key" description="The server-based API key thingy" help="TODO">
+            <f:textbox name="${descriptor.PARAM_API_KEY}" value="${descriptor.apiKey}" />
+        </f:entry>
+
+    </f:section>
+
+</j:jelly>

@@ -6,21 +6,19 @@ import hudson.model.UserProperty;
 import hudson.model.UserPropertyDescriptor;
 
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
-@ExportedBean(defaultVisibility = 999)
-public class GcmUserProperty extends UserProperty {
+public class GcmUserTokenProperty extends UserProperty {
 
     @Extension
     public static final GcmUserPropertyDescriptor DESCRIPTOR = new GcmUserPropertyDescriptor();
 
     private String token;
 
-    public GcmUserProperty() {
+    public GcmUserTokenProperty() {
         // TODO? public constructor needed for @Extension parsing
     }
 
-    public GcmUserProperty(String token) {
+    public GcmUserTokenProperty(String token) {
         token = Util.fixEmptyAndTrim(token);
 
         if (token != null && !isValidToken(token)) {
@@ -30,7 +28,7 @@ public class GcmUserProperty extends UserProperty {
     }
 
     @Exported
-    public String getToken() {
+    public String getGcmToken() {
         return token;
     }
 

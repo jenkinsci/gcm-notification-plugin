@@ -1,7 +1,6 @@
-package org.jenkinsci.plugins.gcm.im.transport;
+package org.jenkinsci.plugins.gcm.im;
 
 import hudson.model.AutoCompletionCandidates;
-import hudson.model.Item;
 import hudson.model.AbstractProject;
 import hudson.model.User;
 import hudson.plugins.im.IMMessageTarget;
@@ -31,9 +30,9 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     private static final String PREFIX = "gcm.";
 
-    public static final String PARAM_ENABLED = PREFIX + "enabled";
+    public static final String PARAM_PROJECT_NUMBER = PREFIX + "projectNumber";
 
-    public static final String PARAM_PRIVATE_KEY = PREFIX + "private_key";
+    public static final String PARAM_API_KEY = PREFIX + "apiKey";
 
     public static final String PARAM_TARGETS = PREFIX + "targets";
 
@@ -41,11 +40,9 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
     public static final String[] PARAMETERVALUE_STRATEGY_VALUES = NotificationStrategy.getDisplayNames();
     public static final String PARAMETERVALUE_STRATEGY_DEFAULT = NotificationStrategy.STATECHANGE_ONLY.getDisplayName();
 
-    private boolean enabled;
+    private String projectNumber;
 
-    private final String privateKey = "---BEGIN KEY---";
-
-    private List<IMMessageTarget> defaultTargets;
+    private String apiKey;
 
     public GcmPublisherDescriptor() {
         super(GcmPublisher.class);
@@ -53,17 +50,14 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
         GcmImConnectionProvider.getInstance().setDescriptor(this);
     }
 
-    /**
-     * This human readable name is used in the configuration screen.
-     */
     @Override
     public String getDisplayName() {
-        return "GCM Notification";
+        return "Notify Android devices";
     }
 
     @Override
     public String getPluginDescription() {
-        return "GCM plugin";
+        return "GCM plugin TODO";
     }
 
     @Override
@@ -71,19 +65,23 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
         return true;
     }
 
-    public String getPrivateKey() {
-        return privateKey;
+    public String getProjectNumber() {
+        return projectNumber;
+    }
+
+    public String getApiKey() {
+        return apiKey;
     }
 
     @Override
     public String getHost() {
-        // TODO Auto-generated method stub
+        // Not required
         return null;
     }
 
     @Override
     public String getHostname() {
-        // TODO Auto-generated method stub
+        // Not required
         return null;
     }
 
@@ -133,35 +131,23 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
      * Creates a new instance of {@link GcmPublisher} from a submitted form.
      */
     @Override
-    public GcmPublisher newInstance(final StaplerRequest req, JSONObject formData) throws FormException
-    {
-        assert req != null;
+    public GcmPublisher newInstance(final StaplerRequest req, JSONObject formData)
+            throws FormException {
         final String t = req.getParameter(PARAM_TARGETS);
 
-        // TODO: Get targets from autocomplete list
-        LOGGER.info(">>> targets given: " + t);
-
-        final String[] split;
-        if (t != null) {
-            split = t.split("\\s");
+        final String[] givenTargets;
+        if (t == null) {
+            givenTargets = new String[0];
         } else {
-            split = new String[0];
+            givenTargets = t.split("\\s");
         }
 
-        List<IMMessageTarget> targets = new ArrayList<IMMessageTarget>(split.length);
-
-
-        try {
-            final IMMessageTargetConverter conv = getIMMessageTargetConverter();
-            for (String fragment : split) {
-                IMMessageTarget createIMMessageTarget;
-                createIMMessageTarget = conv.fromString(fragment);
-                if (createIMMessageTarget != null)  {
-                    targets.add(createIMMessageTarget);
-                }
+        List<IMMessageTarget> targets = new ArrayList<IMMessageTarget>(givenTargets.length);
+        for (String userId : givenTargets) {
+            User user = User.get(userId, false);
+            if (user != null) {
+                targets.add(new GcmMessageTarget(user.getId()));
             }
-        } catch (IMMessageTargetConversionException e) {
-            // TODO
         }
 
         String n = req.getParameter(getParamNames().getStrategy());
@@ -203,11 +189,18 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     public AutoCompletionCandidates doAutoCompleteTargets(@QueryParameter String value) {
         AutoCompletionCandidates candidates = new AutoCompletionCandidates();
+        value = value.toLowerCase();
         for (User user : User.getAll()) {
-            if (user.getId().startsWith(value) || user.getFullName().startsWith(value)) {
-                if (user.hasPermission(Item.READ)) {
-                    candidates.add(user.getId());
-                }
+            if (user == User.getUnknown()) {
+                LOGGER.info("autocomplete: ignoring unknown user");
+                continue;
+            }
+
+            LOGGER.info("autocomplete: checking user: " + user.getId());
+            if (user.getId().toLowerCase().startsWith(value)
+                    || user.getFullName().toLowerCase().startsWith(value)) {
+                LOGGER.info("autocomplete: adding");
+                candidates.add(user.getId());
             }
         }
         return candidates;
@@ -215,19 +208,8 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
-        LOGGER.info("Descriptor: configure from web");
-        String en = req.getParameter(PARAM_ENABLED);
-        this.enabled = (en != null);
-
-        if (isEnabled()) {
-            LOGGER.info("-- is enabled");
-            GcmImConnectionProvider.getInstance().setDescriptor(this);
-            GcmImConnectionProvider.getInstance().currentConnection();
-        } else {
-            LOGGER.info("-- is disabled");
-            GcmImConnectionProvider.getInstance().releaseConnection();
-            GcmImConnectionProvider.getInstance().setDescriptor(null);
-        }
+        projectNumber = req.getParameter(PARAM_PROJECT_NUMBER);
+        apiKey = req.getParameter(PARAM_API_KEY);
         save();
         return super.configure(req, json);
     }
@@ -240,7 +222,6 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
     @Override
     public IMMessageTargetConverter getIMMessageTargetConverter() {
         LOGGER.info("Descriptor: get target converter");
-        // TODO!
         return new IMMessageTargetConverter() {
 
             @Override
@@ -249,9 +230,9 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
             }
 
             @Override
-            public IMMessageTarget fromString(final String user)
+            public IMMessageTarget fromString(String userId)
                     throws IMMessageTargetConversionException {
-                return new GcmMessageTarget(user);
+                return new GcmMessageTarget(userId);
             }
         };
     }

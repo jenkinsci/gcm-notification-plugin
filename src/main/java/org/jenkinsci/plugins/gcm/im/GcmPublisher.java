@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.gcm.im.transport;
+package org.jenkinsci.plugins.gcm.im;
 
 import hudson.Extension;
 import hudson.model.User;
@@ -13,7 +13,7 @@ import hudson.plugins.im.build_notify.BuildToChatNotifier;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.jenkinsci.plugins.gcm.user.GcmUserProperty;
+import org.jenkinsci.plugins.gcm.user.GcmUserTokenProperty;
 
 public class GcmPublisher extends IMPublisher {
 
@@ -59,9 +59,9 @@ public class GcmPublisher extends IMPublisher {
         LOGGER.info("Publisher: get IM info for user: " + user.toString());
 
         // Return the GCM token for the given Jenkins user
-        GcmUserProperty p = (GcmUserProperty) user.getProperties().get(GcmUserProperty.DESCRIPTOR);
+        GcmUserTokenProperty p = (GcmUserTokenProperty) user.getProperties().get(GcmUserTokenProperty.DESCRIPTOR);
         if (p != null) {
-            return p.getToken();
+            return p.getGcmToken();
         }
         return null;
     }

@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
    xmlns:super="/hudson/plugins/im/IMPublisher">
 
-    <f:entry title="Targets" description="Jenkins user IDs whose Android devices should receive notifications">
+    <f:entry title="Users" description="Jenkins user IDs whose Android devices should receive notifications">
 
         <f:textbox
           name="${descriptor.PARAM_TARGETS}"
@@ -9,8 +9,8 @@
           autoCompleteDelimChar="," />
 
     </f:entry>
-    
-    <f:advanced>    
+
+    <f:advanced>
         <super:notification-strategy />
         <super:config-buildToChatNotifier />
         <super:further-config />

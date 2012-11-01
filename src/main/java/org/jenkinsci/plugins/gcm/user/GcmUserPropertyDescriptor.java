@@ -13,18 +13,18 @@ public final class GcmUserPropertyDescriptor extends UserPropertyDescriptor {
     public static final String TOKEN_PARAM_NAME = "gcm.token";
 
     public GcmUserPropertyDescriptor() {
-        super(GcmUserProperty.class);
+        super(GcmUserTokenProperty.class);
     }
 
     @Override
     public UserProperty newInstance(User user) {
-        return new GcmUserProperty(null);
+        return new GcmUserTokenProperty(null);
     }
 
     @Override
     public UserProperty newInstance(StaplerRequest req, JSONObject formData) throws FormException {
         try {
-            return new GcmUserProperty(req.getParameter(TOKEN_PARAM_NAME));
+            return new GcmUserTokenProperty(req.getParameter(TOKEN_PARAM_NAME));
         } catch (IllegalArgumentException e) {
             throw new FormException("invalid token", TOKEN_PARAM_NAME); // TODO fix/localise
         }
