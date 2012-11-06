@@ -1,8 +1,8 @@
 <j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
 
-    <script src="${rootURL}/plugin/gcm/js/livepipe.js"></script>
-    <script src="${rootURL}/plugin/gcm/js/effects.js"></script>
-    <script src="${rootURL}/plugin/gcm/js/window.js"></script>
+    <script src="${resURL}/plugin/gcm-notification/js/livepipe.js"></script>
+    <script src="${resURL}/plugin/gcm-notification/js/effects.js"></script>
+    <script src="${resURL}/plugin/gcm-notification/js/window.js"></script>
     <script type="text/javascript">
       document.observe('dom:loaded',function(){
         var modal = new Control.Modal($('modal'), {
