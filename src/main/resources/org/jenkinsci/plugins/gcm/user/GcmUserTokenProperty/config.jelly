@@ -1,28 +1,36 @@
-<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form" xmlns:st="jelly:stapler">
 
-    <script src="${resURL}/plugin/gcm-notification/js/livepipe.js"></script>
-    <script src="${resURL}/plugin/gcm-notification/js/effects.js"></script>
-    <script src="${resURL}/plugin/gcm-notification/js/window.js"></script>
+  <j:set var="userMatches" value="${it.id == app.authentication.name}" />
+
+  <f:entry title="${%Device token}" field="token">
+    <j:if test="${userMatches}">
+      <input class="yui-button" value="${%Show QR code&#x2026;}" onclick="showQr()" />
+    </j:if>
+    <span id="gcm-show">
+      <j:if test="${userMatches}">${%or}</j:if>
+      <input class="yui-button" value="${%Enter token manually}" onclick="showToken()" />
+    </span>
+    <div id="gcm-token" style="display:none">
+      <f:textarea name="gcm.token" value="${instance.token}" />
+    </div>
     <script type="text/javascript">
-      document.observe('dom:loaded',function(){
-        var modal = new Control.Modal($('modal'), {
-          overlayOpacity: 0.75,
-          className: 'modal',
-          fade: true
-        });
-      });
-    </script>
-
-    <style type="text/css">
-      #control_overlay {
-        background-color:#000;
+      function showToken() {
+        $("gcm-show").style.display="none";
+        $("gcm-token").style.display="block";
       }
-    </style>
+    </script>
+  </f:entry>
 
-    <!-- TODO: Nicer styling / hide token by default / more help text about how to use the QR -->
-    <f:entry title="Google Cloud Messaging token" help="TODO-token">
-        <f:textbox name="gcm.token" value="${instance.token}" />
-        <a id="modal" href="${rootURL}/gcm/generateQrCode.png">Show QR code...</a>
-    </f:entry>
+  <st:adjunct includes="hudson.plugins.jquery.colorbox" />
+  <script type="text/javascript">
+    function showQr() {
+      var title = "${%Scan with the Android app to automatically configure your token}";
+      var url = "${rootURL}/gcm/generateQrCode.png";
+      Q.colorbox({maxWidth:"95%",maxHeight:"95%",initialWidth:100,initialHeight:100,title:title,href:url});
+    }
+  </script>
+  <style type="text/css">
+    #cboxClose { display: none !important; }
+  </style>
 
 </j:jelly>

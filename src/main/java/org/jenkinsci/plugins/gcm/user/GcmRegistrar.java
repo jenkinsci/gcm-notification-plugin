@@ -90,7 +90,7 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
                 QRCodeWriter qr = new QRCodeWriter();
                 BitMatrix matrix = null;
                 try {
-                    matrix = qr.encode(content, BarcodeFormat.QR_CODE, 400, 400);
+                    matrix = qr.encode(content, BarcodeFormat.QR_CODE, 450, 450);
                     rsp.setStatus(200);
                     rsp.setContentType("image/png");
                     MatrixToImageWriter.writeToStream(matrix, "png", rsp.getOutputStream());

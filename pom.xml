@@ -33,6 +33,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jquery</artifactId>
+            <version>1.7.2-1</version>
+        </dependency>
+
         <!-- gcm-server.jar imported locally as per http://stackoverflow.com/questions/11989236 -->
         <dependency>
             <groupId>com.google.android.gcm</groupId>
