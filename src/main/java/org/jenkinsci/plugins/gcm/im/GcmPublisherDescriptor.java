@@ -97,7 +97,7 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
         if (t == null) {
             givenTargets = new String[0];
         } else {
-            givenTargets = t.split("\\s");
+            givenTargets = t.split("[\\s,]+");
         }
 
         // From the users listed, determine which ones are actual Jenkins users
