@@ -1,11 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Using local 1.21-SNAPSHOT with 1.466 parent -->
     <parent>
         <groupId>org.jvnet.hudson.plugins</groupId>
         <artifactId>instant-messaging-parent</artifactId>
-        <version>1.21-SNAPSHOT</version>
+        <version>1.21</version>
         <relativePath>../instant-messaging-parent-plugin/pom.xml</relativePath>
     </parent>
 
@@ -29,7 +28,7 @@
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>instant-messaging</artifactId>
-            <version>1.22</version>
+            <version>1.23</version>
             <scope>compile</scope>
         </dependency>
 
@@ -67,6 +66,17 @@
             <version>2.1</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <version>1.74</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
 
     <repositories>
         <repository>
