@@ -6,16 +6,17 @@ import hudson.model.AbstractModelObject;
 import hudson.model.User;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 
 import jenkins.model.Jenkins;
+import jenkins.security.ApiTokenProperty;
 
 import org.acegisecurity.context.SecurityContextHolder;
 import org.jenkinsci.plugins.gcm.im.GcmPublisher;
 import org.json.simple.JSONObject;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -31,45 +32,39 @@ import com.google.zxing.qrcode.QRCodeWriter;
 public class GcmRegistrar extends AbstractModelObject implements UnprotectedRootAction {
 
     @Override
-    public String getDisplayName() {
-        return "GCM";
-    }
-
-    @Override
     public String getUrlName() {
         return "gcm";
     }
 
-    // TODO: Handle errors
     public HttpResponse doRegister(@QueryParameter(required = true) final String token)
             throws ServletException, IOException {
         return new HttpResponse() {
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node)
                     throws IOException, ServletException {
-                rsp.setStatus(200);
-                PrintWriter w = rsp.getWriter();
                 User user = getCurrentUser();
-                if (user != null) {
-                    user.addProperty(new GcmUserTokenProperty(token));
-                    user.save();
+                if (user == null) {
+                    throw HttpResponses.error(403, "User not authenticated.");
                 }
-                String userId = user.getId();
-                w.write(String.format("OK! I got API token '%s' for user '%s'", token, userId));
+                user.addProperty(new GcmUserTokenProperty(token));
+                user.save();
+
+                rsp.setStatus(200);
+                rsp.getWriter().write("API token updated successfully.");
             }
         };
     }
 
-    // TODO: Proper response codes if invalid user
+    @SuppressWarnings("unchecked")
     @WebMethod(name = "generateQrCode.png")
     public HttpResponse doGenerateQrCode() {
         User user = getCurrentUser();
         if (user == null) {
-            return null;
+            return HttpResponses.redirectToContextRoot();
         }
 
         String userId = user.getId();
-        String userApiToken = user.getProperty(GcmUserTokenProperty.class).getUserApiToken(); // TODO
+        String userApiToken = user.getProperty(ApiTokenProperty.class).getApiToken();
         String jenkinsUrl = Jenkins.getInstance().getRootUrl();
         String googleProjectNumber = GcmPublisher.DESCRIPTOR.getProjectNumber();
 
@@ -82,7 +77,6 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
         final String content = params.toJSONString();
 
         return new HttpResponse() {
-
             @Override
             public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node)
                     throws IOException, ServletException {
@@ -94,8 +88,8 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
                     rsp.setStatus(200);
                     rsp.setContentType("image/png");
                     MatrixToImageWriter.writeToStream(matrix, "png", rsp.getOutputStream());
-                } catch (WriterException e1) {
-                    e1.printStackTrace();
+                } catch (WriterException e) {
+                    throw HttpResponses.error(500, e);
                 }
             }
         };
@@ -109,6 +103,12 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
     private static User getCurrentUser() {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         return User.get(userId, false);
+    }
+
+    @Override
+    public String getDisplayName() {
+        // Unused
+        return null;
     }
 
     @Override
