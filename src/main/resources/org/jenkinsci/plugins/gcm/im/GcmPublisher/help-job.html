@@ -1,0 +1,15 @@
+<p>
+These users will only receive notifications if they have set up their Android device on their
+Jenkins user configuration page, and have an appropriate app installed. If a "Device token" has not
+been entered, that user will not receive notifications.
+</p>
+<p>
+Jenkins will retry once to re-send the notification if the Google Cloud Messaging servers cannot be
+reached when the notification should be sent. GCM will then store the message and forward it to the
+appropriate device when it comes online. i.e. The Android devices should receive notifications sent,
+even if the device happens to be temporarily offline.
+</p>
+<p>
+See this plugin's <a href="https://wiki.jenkins-ci.org/display/JENKINS/GCM+Notification+Plugin">wiki
+page</a> for details on compatible Android apps.
+</p>
