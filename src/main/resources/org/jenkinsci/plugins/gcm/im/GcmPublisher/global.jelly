@@ -4,11 +4,13 @@
 
     <f:section title="Google Cloud Messaging Notifications">
 
-        <f:entry title="Project number" description="That weird number in the API console" help="TODO">
+        <f:entry title="${%API project number}" field="projectNumber"
+                 description="${%From the 'Overview' page of the Google APIs Console}">
             <f:textbox name="${descriptor.PARAM_PROJECT_NUMBER}" value="${descriptor.projectNumber}" />
         </f:entry>
 
-        <f:entry title="Simple API access key" description="The server-based API key thingy" help="TODO">
+        <f:entry title="${%Server app API key}" field="apiKey"
+                 description="${%'Key for server apps' from the 'API Access' page of the Google APIs console}">
             <f:textbox name="${descriptor.PARAM_API_KEY}" value="${descriptor.apiKey}" />
         </f:entry>
 

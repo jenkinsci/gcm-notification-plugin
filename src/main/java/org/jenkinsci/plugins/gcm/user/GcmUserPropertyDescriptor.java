@@ -5,6 +5,7 @@ import hudson.model.UserPropertyDescriptor;
 import hudson.model.User;
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.plugins.gcm.Messages;
 import org.kohsuke.stapler.StaplerRequest;
 
 public final class GcmUserPropertyDescriptor extends UserPropertyDescriptor {
@@ -26,13 +27,13 @@ public final class GcmUserPropertyDescriptor extends UserPropertyDescriptor {
         try {
             return new GcmUserTokenProperty(req.getParameter(TOKEN_PARAM_NAME));
         } catch (IllegalArgumentException e) {
-            throw new FormException("invalid token", TOKEN_PARAM_NAME); // TODO fix/localise
+            throw new FormException("Invalid GCM token", TOKEN_PARAM_NAME);
         }
     }
 
     @Override
     public String getDisplayName() {
-        return "GCM token"; // TODO localise
+        return Messages.Gcm_GoogleCloudMessagingToken();
     }
 
 }

@@ -17,17 +17,16 @@ import hudson.tasks.Publisher;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import net.sf.json.JSONObject;
 
+import org.jenkinsci.plugins.gcm.Messages;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> implements IMPublisherDescriptor {
 
-    private static final Logger LOGGER = Logger.getLogger(GcmPublisherDescriptor.class.getName());
-
+    // Distinguishes the config for this IM plugin from others
     private static final String PREFIX = "gcm.";
 
     // Required by {@code GcmPublish/global.jelly}
@@ -55,12 +54,13 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     @Override
     public String getDisplayName() {
-        return "Notify Android devices"; // TODO localise
+        return Messages.Gcm_NotifyAndroidDevices();
     }
 
     @Override
     public String getPluginDescription() {
-        return "GCM plugin TODO"; // TODO where is this used?
+        // Not needed for this plugin
+        return "";
     }
 
     @Override
@@ -109,7 +109,7 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
             }
         }
 
-        // Boilerplate advanced configuration stuff
+        // Boilerplate advanced configuration stuff from IMPublisher/notification-strategy.jelly
         String n = req.getParameter(getParamNames().getStrategy());
         if (n == null) {
             n = PARAMETERVALUE_STRATEGY_DEFAULT;
@@ -178,9 +178,7 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     @Override
     public IMMessageTargetConverter getIMMessageTargetConverter() {
-        LOGGER.info("Descriptor: get target converter");
         return new IMMessageTargetConverter() {
-
             @Override
             public String toString(IMMessageTarget target) {
                 return target.toString();
@@ -196,7 +194,6 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
 
     @Override
     public List<IMMessageTarget> getDefaultTargets() {
-        LOGGER.info("Descriptor: get default targets");
         return Collections.emptyList();
     }
 
@@ -210,8 +207,7 @@ public class GcmPublisherDescriptor extends BuildStepDescriptor<Publisher> imple
         };
     }
 
-    // These methods are required to be overridden,
-    // but for this plugin we don't need any of them
+    // These methods are required to be overridden, but for this plugin we don't need any of them
 
     @Override
     public boolean isExposePresence() {

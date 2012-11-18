@@ -41,7 +41,8 @@ public final class GcmPublisher extends IMPublisher {
 
     @Override
     protected String getPluginName() {
-        return "GCM Android notifier plugin"; // TODO where is this shown? localise
+        // Used in log messages
+        return "GCM";
     }
 
     @Override

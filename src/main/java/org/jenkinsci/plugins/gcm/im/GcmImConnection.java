@@ -6,13 +6,9 @@ import hudson.plugins.im.IMException;
 import hudson.plugins.im.IMMessageTarget;
 import hudson.plugins.im.IMPresence;
 
-import java.util.logging.Logger;
-
 import org.jenkinsci.plugins.gcm.transport.GcmManager;
 
 final class GcmImConnection implements IMConnection {
-
-    private static final Logger LOGGER = Logger.getLogger(GcmImConnection.class.getName());
 
     private static final GcmImConnection INSTANCE = new GcmImConnection();
 
@@ -23,7 +19,6 @@ final class GcmImConnection implements IMConnection {
     @Override
     public void send(IMMessageTarget target, String text) throws IMException {
         String gcmToken = ((GcmMessageTarget) target).getToken();
-        LOGGER.info(String.format("Send '%s' to user '%s' with token %s", text, target, gcmToken));
         GcmManager.send(gcmToken, text);
     }
 
