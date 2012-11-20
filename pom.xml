@@ -13,7 +13,7 @@
     <packaging>hpi</packaging>
 
     <name>Google Cloud Messsaging Notification Plugin</name>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <url>http://wiki.jenkins-ci.org/display/JENKINS/GCM+Notification+Plugin</url>
     <developers>
         <developer>
