@@ -10,11 +10,12 @@ import org.jenkinsci.plugins.gcm.im.GcmImException;
 import org.jenkinsci.plugins.gcm.im.GcmPublisher;
 
 import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
 
 public class GcmManager {
 
-    public static void send(String userToken, String text) throws IMException {
+    public static Result send(String userToken, String text) throws IMException {
         // Check whether the server token was provided
         String serverApiKey = GcmPublisher.DESCRIPTOR.getApiKey();
         if (StringUtils.isEmpty(serverApiKey)) {
@@ -33,7 +34,7 @@ public class GcmManager {
         // Try to send message to GCM, retrying once (as sending is synchronous)
         Sender sender = new Sender(serverApiKey);
         try {
-            sender.send(message, userToken, 1);
+            return sender.send(message, userToken, 1);
         } catch (IOException e) {
             throw new IMException(e);
         }
