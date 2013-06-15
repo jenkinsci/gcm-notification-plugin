@@ -36,23 +36,15 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
         return "gcm";
     }
 
-    public HttpResponse doRegister(@QueryParameter(required = true) final String token)
-            throws ServletException, IOException {
-        return new HttpResponse() {
-            @Override
-            public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node)
-                    throws IOException, ServletException {
-                User user = getCurrentUser();
-                if (user == null) {
-                    throw HttpResponses.error(403, "User not authenticated.");
-                }
-                user.addProperty(new GcmUserTokenProperty(token));
-                user.save();
+    public HttpResponse doRegister(@QueryParameter(required = true) final String token) throws IOException {
+        User user = getCurrentUser();
+        if (user == null) {
+            throw HttpResponses.error(403, "User not authenticated.");
+        }
+        user.addProperty(new GcmUserTokenProperty(token));
+        user.save();
 
-                rsp.setStatus(200);
-                rsp.getWriter().write("API token updated successfully.");
-            }
-        };
+        return HttpResponses.plainText("API token updated successfully.");
     }
 
     @SuppressWarnings("unchecked")
