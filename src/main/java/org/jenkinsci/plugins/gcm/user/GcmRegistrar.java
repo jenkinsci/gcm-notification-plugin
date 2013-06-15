@@ -37,24 +37,12 @@ public class GcmRegistrar extends AbstractModelObject implements UnprotectedRoot
     }
 
     public HttpResponse doRegister(@QueryParameter(required = true) final String token) throws IOException {
-        User user = getCurrentUser();
-        if (user != null) {
-            user.addProperty(new GcmUserTokenProperty(token));
-            user.save();
-            return HttpResponses.plainText("API token updated successfully.");
-        }
+        Jenkins.getInstance().checkPermission(Jenkins.READ);
 
-        // If 'user' was null, no valid HTTP authentication was sent
-        return new HttpResponse() {
-            @Override
-            public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node)
-                    throws IOException, ServletException {
-                rsp.setStatus(401);
-                rsp.addHeader("WWW-Authenticate", "Basic realm='Jenkins API'");
-                rsp.getWriter().write("User not authenticated");
-                return;
-            }
-        };
+        User user = getCurrentUser();
+        user.addProperty(new GcmUserTokenProperty(token));
+        user.save();
+        return HttpResponses.plainText("API token updated successfully.");
     }
 
     @SuppressWarnings("unchecked")
