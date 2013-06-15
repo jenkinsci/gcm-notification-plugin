@@ -1,12 +1,18 @@
 package org.jenkinsci.plugins.gcm.im;
 
+import hudson.model.User;
 import hudson.plugins.im.IMConnection;
 import hudson.plugins.im.IMConnectionListener;
 import hudson.plugins.im.IMException;
 import hudson.plugins.im.IMMessageTarget;
 import hudson.plugins.im.IMPresence;
 
+import java.io.IOException;
+
 import org.jenkinsci.plugins.gcm.transport.GcmManager;
+import org.jenkinsci.plugins.gcm.user.GcmUserTokenProperty;
+
+import com.google.android.gcm.server.Result;
 
 final class GcmImConnection implements IMConnection {
 
@@ -18,8 +24,26 @@ final class GcmImConnection implements IMConnection {
 
     @Override
     public void send(IMMessageTarget target, String text) throws IMException {
-        String gcmToken = ((GcmMessageTarget) target).getToken();
-        GcmManager.send(gcmToken, text);
+        GcmMessageTarget gcmTarget = (GcmMessageTarget) target;
+        String gcmToken = gcmTarget.getToken();
+
+        Result result = GcmManager.send(gcmToken, text);
+        checkResult(result, gcmTarget.getUserId());
+    }
+
+    private void checkResult(Result result, String userId) throws IMException {
+        if (result.getMessageId() == null
+                || result.getCanonicalRegistrationId() == null)
+            return;
+        GcmUserTokenProperty token = new GcmUserTokenProperty(
+                result.getCanonicalRegistrationId());
+        User user = User.get(userId, false);
+        try {
+            user.addProperty(token);
+            user.save();
+        } catch (IOException e) {
+            throw new IMException(e);
+        }
     }
 
     @Override
@@ -34,7 +58,8 @@ final class GcmImConnection implements IMConnection {
     }
 
     @Override
-    public void setPresence(IMPresence presence, String statusMessage) throws IMException {
+    public void setPresence(IMPresence presence, String statusMessage)
+            throws IMException {
         // Not required
     }
 
